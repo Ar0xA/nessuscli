@@ -1,6 +1,5 @@
 #This takes as input a .nessus scan file with either vulnerability or compliance info (or both)
-#and outputs a horizontal barchar per host, and a total average piechart with PASSED,
-#WARNING and FAILED 's.
+#and outputs a horizontal barchar per host, and a total average piechart.
 #
 #autor: @Ar0xA / ar0xa@tldr.nu
 
