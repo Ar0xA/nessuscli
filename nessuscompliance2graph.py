@@ -1,5 +1,5 @@
-#This takes as input a .nessus compliance scan file and outputs a graphic horizontal bar chart
-#with PASSED, WARNING and FAILED 's.
+#This takes as input a .nessus compliance scan file and outputs a horizontal barchar
+#per host, and a total average piechart with PASSED, WARNING and FAILED 's.
 #
 #autor: @Ar0xA / ar0xa@tldr.nu
 
@@ -16,6 +16,42 @@ plt.rcdefaults()
 import numpy as np
 import argparse
 import sys
+
+#make an average piechart from compliance_result into export_file. the args_format is the fileformat of export_file
+def make_avg_piechart(compliance_result, export_file, args_format):
+
+    #calculate average passed, warning, failed
+    server_count = len (compliance_result)
+
+    all_passed = 0
+    for result in compliance_result:
+        all_passed += result[1]
+
+    all_warning = 0
+    for result in compliance_result:
+        all_warning += result[2]
+
+    all_failed = 0
+    for result in compliance_result:
+        all_failed += result[3]
+
+    total_items = (all_passed + all_warning + all_failed) / server_count
+    avg_passed = round(float(all_passed / server_count) / total_items*100,2)
+    avg_warning = round(float(all_warning / server_count) / total_items*100,2)
+    avg_failed = round(float(all_failed / server_count) / total_items*100,2)
+
+    #now, lets make the piechart!
+    labels = 'Passed', 'Warning', 'Failed'
+    colors = ["green", "magenta","red"]
+    sizes = [avg_passed, avg_warning, avg_failed]
+
+    fig = plt.figure(figsize = (10, 10), frameon = False)
+    ax = fig.add_subplot(111)
+    ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', shadow = True, startangle=90)
+    ax.axis('equal')
+    ax.set_title(export_file + " - total avg")
+    plt.savefig(export_file.replace(' ', '_') + '_pie.'+ args_format)
+
 
 #make a horizontal barchart from compliance_result into export_file. the args_format is the fileformat of export_file
 def make_hbarchart(compliance_result,export_file,args_format):
@@ -74,7 +110,7 @@ def make_hbarchart(compliance_result,export_file,args_format):
     ax.set_title(export_file)
     ax.set_yticks(y_pos)
     ax.set_yticklabels(all_servers)
-    plt.savefig(export_file.replace(' ', '_') + '.'+ args_format)
+    plt.savefig(export_file.replace(' ', '_') + '_hbar.'+ args_format)
 
 #here we parse results from the nessus file, we extract the compliance results and return that in an array
 #in the format [ ['hostname', int(passed), int(warning), int(failed)], [etc.] ]
@@ -157,6 +193,7 @@ def main():
 
     # ok now that we have the compliance results, lets make some magic!
     make_hbarchart(compliance_result,export_file, args.format)
+    make_avg_piechart(compliance_result, export_file, args.format)
 
 if __name__ == "__main__":
   main()
