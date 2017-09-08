@@ -169,7 +169,7 @@ def main():
         default = 10051)
     parser.add_argument('-t', '--type', help = 'What type of result to parse the file for.', choices = ['both', 'vulnerability','compliance' ],
         default = 'both')
-    parser.add_argument('-f','--fake', help='Do everything but actually send data to Zabbix', type=bool, default='False')
+    parser.add_argument('-f','--fake', help='Do everything but actually send data to Zabbix', type=bool, action='store_true', default=False)
     args = parser.parse_args()
 
     if not args.input:
