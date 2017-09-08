@@ -122,13 +122,13 @@ def send_comp_to_zabbix(compliance_results, args_server, args_port, nessus_metad
 
         #debug
         #z.printData()
-        if args_fake == "False":
+        if args_fake:
+            print "Faking. This is where I send data"
+        else:
             results = z.sendDataOneByOne()
             for (code,data) in results:
                 if code != z.RC_OK:
                     print "Failed to send %s" % str(data)
-        else:
-            print "Faking. This is where I send data"
         z.clearData()
     print "Done sending compliance data"
 
@@ -148,13 +148,13 @@ def send_vuln_to_zabbix(vulnerability_results, args_server, args_port, nessus_me
 
         #debug
         #z.printData()
-        if args_fake == "False":
+        if args_fake:
+            print "Faking. This is where I send data"
+        else:
             results = z.sendDataOneByOne()
             for (code,data) in results:
                 if code != z.RC_OK:
                     print "Failed to send %s" % str(data)
-        else:
-            print "Faking. This is where I send data"
         z.clearData()
     print "Done sending vulnerability data"
 
@@ -169,7 +169,7 @@ def main():
         default = 10051)
     parser.add_argument('-t', '--type', help = 'What type of result to parse the file for.', choices = ['both', 'vulnerability','compliance' ],
         default = 'both')
-    parser.add_argument('-f','--fake', help='Do everything but actually send data to Zabbix', choices = ['True','False'], default='False')
+    parser.add_argument('-f','--fake', help='Do everything but actually send data to Zabbix', type=bool, action='store_true', default=False)
     args = parser.parse_args()
 
     if not args.input:
@@ -177,20 +177,14 @@ def main():
         sys.exit(1)
 
     # read the file..might be big though...
-    try:
-        f = open(args.input, 'r')
-    except:
-        print 'File %s not found!' % args.input
-        sys.exit(1)
-
-    print 'Parsing file %s as xml into memory, hold on...' % (args.input)
-
-    nessus_xml_data = BeautifulSoup(f.read(), 'lxml')
+    with open(args.input, 'r') as f:
+        print 'Parsing file %s as xml into memory, hold on...' % (args.input)
+        nessus_xml_data = BeautifulSoup(f.read(), 'lxml')
 
     #find metadata we need
     #todo: if not find items..is this valid nessus file?
     tmp_scanname = nessus_xml_data.report['name']
-    if not len(tmp_scanname) > 0:
+    if len(tmp_scanname) == 0:
         print 'Didn\'t find report name in file. is this a valid nessus file?'
         sys.exit(1)
 
