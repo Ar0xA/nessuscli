@@ -44,16 +44,16 @@ def parse_vuln_results(hosts):
             try:
                 vuln_item = rItem.find('compliance')
                 risk_factor = rItem.find('risk_factor')
-                if (vuln_item) == None and ( risk_factor.get_text() == 'Low'):
+                if (vuln_item == None) and ( risk_factor.get_text() == 'Low'):
                     low += 1
                     is_data = True
-                elif (vuln_item) == None and ( risk_factor.get_text() == 'Medium'):
+                elif (vuln_item == None) and ( risk_factor.get_text() == 'Medium'):
                     medium += 1
                     is_data = True
-                elif (vuln_item) == None and ( risk_factor.get_text() == 'High'):
+                elif (vuln_item == None) and ( risk_factor.get_text() == 'High'):
                     high += 1
                     is_data = True
-                elif (vuln_item) == None and ( risk_factor.get_text() == 'Critical'):
+                elif (vuln_item == None) and ( risk_factor.get_text() == 'Critical'):
                     critical += 1
                     is_data = True
             except:
@@ -85,13 +85,13 @@ def parse_comp_results(hosts):
             #ok lets find all compliance result items, and ONLY compliance items
             try:
                 compliance_item = rItem.find('cm:compliance-result')
-                if (compliance_item != None) and(compliance_item.get_text() == 'PASSED'):
+                if (compliance_item != None) and (compliance_item.get_text() == 'PASSED'):
                     passed += 1
                     is_data = True
-                elif(compliance_item != None) and(compliance_item.get_text() == 'FAILED'):
+                elif(compliance_item != None) and (compliance_item.get_text() == 'FAILED'):
                     failed += 1
                     is_data = True
-                elif(compliance_item != None) and(compliance_item.get_text() == 'WARNING'):
+                elif(compliance_item != None) and (compliance_item.get_text() == 'WARNING'):
                     warning += 1
                     is_data = True
             except:
@@ -126,7 +126,7 @@ def send_comp_to_zabbix(compliance_results, args_server, args_port, nessus_metad
             print "Faking. This is where I send data"
         else:
             results = z.sendDataOneByOne()
-            for (code,data) in results:
+            for (code, data) in results:
                 if code != z.RC_OK:
                     print "Failed to send %s" % str(data)
         z.clearData()
